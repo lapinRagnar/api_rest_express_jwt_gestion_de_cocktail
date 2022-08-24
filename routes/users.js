@@ -87,6 +87,37 @@ router.patch('/:id', (req, res) => {
 
 })
 
+
+router.post('/untrash/:id', (req, res) => {
+
+  let userId = parseInt(req.params.id)
+
+  if (!userId) {
+    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
+  }
+
+  User.restore({ where: {id: userId }})
+    .then(() => res.status(204).json({}))
+    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+})
+
+
+router.delete('/trash/:id', (req, res) => {
+
+  let userId = parseInt(req.params.id)
+  
+  if (!userId) {
+    return res.status(400).json({ message: 'ID non trouvé' })
+  }
+
+  User.destroy({ where: {id: userId } })
+    .then(() => res.status(204).json({}))
+    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+})
+
+
 router.delete('/:id', (req, res) => {
 
   let userId = parseInt(req.params.id)
@@ -102,4 +133,4 @@ router.delete('/:id', (req, res) => {
 })
 
 
-
+module.exports = router
