@@ -8,3 +8,5 @@ npm i nodemon --save-dev
 
 ## la base de donnée
 > npm i sequelize mysql2
+
+## il faut lancer le server mysql
