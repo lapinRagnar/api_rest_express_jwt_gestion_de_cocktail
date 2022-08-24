@@ -15,7 +15,7 @@ app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
 app.get('*', (req, res) => res.status(501).send(`Ouuuups, qu'est ce que t'as foutu!`))
 
 /** demarrer le server */
-app.listen(8989, () => {
-    console.log('Server listening on port 8989')
+app.listen(process.env.SERVER_PORT, () => {
+    console.log(`le server ecoute sur le port ===> ${process.env.SERVER_PORT} `)
 })
 
