@@ -2,6 +2,8 @@ const express = require('express')
 
 const User = require('../models/user')
 
+const bcrypt = require('bcrypt')
+
 let router = express.Router()
 
 /** routages de la ressource User */
@@ -42,9 +44,18 @@ router.put('', (req, res) => {
         return res.status(409).json({ message: ` l'user ${nom} existe, choisit un autre... `})
       }
 
-      User.create(req.body)
-        .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
-        .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+      bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
+        .then(hash => {
+
+          req.body.password = hash
+
+          User.create(req.body)
+            .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
+            .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+        })
+        .catch(err => res.status(500).json({ message: 'hash process error', error: err}))
+
     })
     .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
