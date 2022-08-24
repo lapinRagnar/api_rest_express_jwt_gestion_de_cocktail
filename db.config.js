@@ -1,4 +1,4 @@
-const { sequelize } = require('sequelize')
+const { Sequelize } = require('sequelize')
 
 let sequelize = new Sequelize(
   process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
@@ -11,4 +11,4 @@ let sequelize = new Sequelize(
 
 sequelize.sync()
 
-module.export = sequelize
+module.exports = sequelize
