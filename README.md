@@ -1,1 +1,3 @@
-git commit -m "first commit"
+## pour lancer le server
+> node server.js
+
