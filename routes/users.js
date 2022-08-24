@@ -14,7 +14,9 @@ router.get('', (req, res) => {
 })
 
 router.get('/:id', (req, res) => {
+
   let userId = parseInt(req.params.id)
+
   if (!userId) {
     return res.status(400).json({ message: 'ID non trouvé' })
   }
@@ -61,9 +63,43 @@ router.put('', (req, res) => {
 
 })
 
-router.patch('/:id')
+router.patch('/:id', (req, res) => {
 
-router.delete('/:id')
+  let userId = parseInt(req.params.id)
+
+  if (!userId) {
+    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
+  }
+
+  User.findOne({ where: {id: userId}, raw: true })
+    .then(user => {
+
+      if (user === null) {
+        return res.status(400).json({ message: 'ouuups, cette utilisateur n\'existe pas...' })
+      }
+
+      User.update(req.body, { where: { id: userId }})
+        .then(user => res.json({ message: "l'utilisateur a été bien mises à jour!", data: user}))
+        .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+    })
+    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+})
+
+router.delete('/:id', (req, res) => {
+
+  let userId = parseInt(req.params.id)
+  
+  if (!userId) {
+    return res.status(400).json({ message: 'ID non trouvé' })
+  }
+
+  User.destroy({ where: {id: userId }, force: true })
+    .then(() => res.status(204).json({}))
+    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+})
 
 
 
