@@ -14,54 +14,98 @@ exports.getAllCocktails = (req, res) => {
 
 
 // afficher un cocktail
-exports.getCocktail = (req, res) => {
+exports.getCocktail = async (req, res) => {
 
   let cocktailId = parseInt(req.params.id)
 
   console.log('id du cocktail: ',cocktailId)
 
+
+
   if (!cocktailId) {
     return res.status(400).json({ message: 'ID non trouvé' })
   }
 
-  Cocktail.findOne({ where: {id: cocktailId}, raw: true })
-    .then(cocktail => {
 
-      if ((cocktail === null)) {
-        return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
-      }
+  try {
 
-      return res.json({data: cocktail})
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+    // recuperer le cocktail
+    let cocktail = await Cocktail.findOne({ where: {id: cocktailId}, raw: true })
+
+    // teste si resultat
+    if ((cocktail === null)) {
+      return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
+    }
+
+    // renvoie du cocktail trouvé
+    return res.json({data: cocktail})
+
+  } catch (err) {
+
+    return res.status(500).json({ message: 'erreur de la base de donnée', error: err})
+
+  }
+
+
+
+  // Cocktail.findOne({ where: {id: cocktailId}, raw: true })
+  //   .then(cocktail => {
+
+  //     if ((cocktail === null)) {
+  //       return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
+  //     }
+
+  //     return res.json({data: cocktail})
+  //   })
+  //   .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 
 
 
 // ajouter un cocktail
-exports.addCocktail = (req, res) => {
+exports.addCocktail = async (req, res) => {
 
   const { user_id, nom, description, recette } = req.body
 
+  
   if ( !user_id || !nom || !description || !recette) {
     return res.status(400).json({ message: "donnée manquantes!, remplit bien tous les champs requis stp!" })
   }
 
-  Cocktail.findOne({ where: { nom: nom }, raw: true})
-    .then(cocktail => {
+  try {
+    
+    // verification si le cocktail existe
+    let cocktail = await Cocktail.findOne({ where: { nom: nom }, raw: true})
 
-      if (cocktail !== null) {
-        return res.status(409).json({ message: ` le cocktail ${nom} existe, choisit un autre... `})
-      }
+    if (cocktail !== null) {
+      return res.status(409).json({ message: ` le cocktail ${nom} existe, choisit un autre... `})
+    }
+
+    cocktail = await Cocktail.create(req.body)
+    return res.json({ message: "le cocktail a été bien crée!", data: cocktail})
+
+  } catch (err) {
+
+    return res.status(500).json({ message: 'erreur de la base de donnée', error: err})
+
+  }
 
 
-      Cocktail.create(req.body)
-        .then(cocktail => res.json({ message: "le cocktail a été bien crée!", data: cocktail}) )
-        .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+  // Cocktail.findOne({ where: { nom: nom }, raw: true})
+  //   .then(cocktail => {
 
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+  //     if (cocktail !== null) {
+  //       return res.status(409).json({ message: ` le cocktail ${nom} existe, choisit un autre... `})
+  //     }
+
+
+  //     Cocktail.create(req.body)
+  //       .then(cocktail => res.json({ message: "le cocktail a été bien crée!", data: cocktail}) )
+  //       .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+
+  //   })
+  //   .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 
