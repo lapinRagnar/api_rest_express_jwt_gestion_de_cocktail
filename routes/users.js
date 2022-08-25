@@ -37,7 +37,7 @@ router.put('', (req, res) => {
   const { nom, prenom, pseudo, email, password } = req.body
 
   if ( !nom || !prenom || !pseudo || !email || !password) {
-    return res.status(400).json({ message: 'données non trouvé' })
+    return res.status(400).json({ message: "donnée manquantes!, remplit bien tous les champs requis stp!" })
   }
 
   User.findOne({ where: { email: email }, raw: true})
