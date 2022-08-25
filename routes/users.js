@@ -1,12 +1,8 @@
 // les imports
 const express = require('express')
-
-const User = require('../models/user')
-
-const bcrypt = require('bcrypt')
+const userCtrl = require('../controllers/user')
 
 let router = express.Router()
-
 
 
 /** middleware pour logger la date des requetes */
@@ -23,132 +19,42 @@ router.use((req, res, next) => {
 
 
 /** routages de la ressource User */
-router.get('', (req, res) => {
-  User.findAll()
-    .then(users => res.json({data: users}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err})) 
-})
+
+
+// affichers tous les utilisateurs
+router.get('/', userCtrl.getAllUsers)
+
+
+// afficher un utilisateur par id
+router.get('/:id', userCtrl.getUser)
 
 
 
-router.get('/:id', (req, res) => {
-
-  let userId = parseInt(req.params.id)
-
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
-  }
-
-  User.findOne({ where: {id: userId}, raw: true })
-    .then(user => {
-      if ((user === null)) {
-        return res.status(404).json({ message: 'User not found' })
-      }
-
-      return res.json({data: user})
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-})
-
-router.put('', (req, res) => {
-
-  const { nom, prenom, pseudo, email, password } = req.body
-
-  if ( !nom || !prenom || !pseudo || !email || !password) {
-    return res.status(400).json({ message: "donnée manquantes!, remplit bien tous les champs requis stp!" })
-  }
-
-  User.findOne({ where: { email: email }, raw: true})
-    .then(user => {
-      if (user !== null) {
-        return res.status(409).json({ message: ` l'user ${nom} existe, choisit un autre... `})
-      }
-
-      bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
-        .then(hash => {
-
-          req.body.password = hash
-
-          User.create(req.body)
-            .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
-            .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-        })
-        .catch(err => res.status(500).json({ message: 'hash process error', error: err}))
-
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-})
-
-router.patch('/:id', (req, res) => {
-
-  let userId = parseInt(req.params.id)
-
-  if (!userId) {
-    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
-  }
-
-  User.findOne({ where: {id: userId}, raw: true })
-    .then(user => {
-
-      if (user === null) {
-        return res.status(400).json({ message: 'ouuups, cette utilisateur n\'existe pas...' })
-      }
-
-      User.update(req.body, { where: { id: userId }})
-        .then(user => res.json({ message: "l'utilisateur a été bien mises à jour!", data: user}))
-        .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-})
+// ajouter un utilisateur
+router.put('', userCtrl.addUser)
 
 
-router.post('/untrash/:id', (req, res) => {
+// modifier un utilisateur
 
-  let userId = parseInt(req.params.id)
-
-  if (!userId) {
-    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
-  }
-
-  User.restore({ where: {id: userId }})
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-})
+router.patch('/:id', userCtrl.updateUser)
 
 
-router.delete('/trash/:id', (req, res) => {
 
-  let userId = parseInt(req.params.id)
-  
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
-  }
+// restaurer un utilisateur
 
-  User.destroy({ where: {id: userId } })
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-})
+router.post('/untrash/:id', userCtrl.untrashUser)
 
 
-router.delete('/:id', (req, res) => {
 
-  let userId = parseInt(req.params.id)
-  
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
-  }
+// mettre à la corbeille utilisateur
 
-  User.destroy({ where: {id: userId }, force: true })
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+router.delete('/trash/:id', userCtrl.trashUser)
 
-})
+// supprimer definitivement un utilisateur
+
+router.delete('/:id', userCtrl.deleteUser)
+
+
 
 
 module.exports = router
