@@ -16,27 +16,36 @@ app.use(express.urlencoded({ extended: true }))
 const user_router = require('./routes/users')
 const cocktail_router = require('./routes/cocktails')
 
+const auth_router = require('./routes/auth')
+
 
 /** mise en place du routage */
 app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
 
 app.use('/users', user_router)
+
 // app.use('/cocktails', cocktail_router)
 
+app.use('/auth', auth_router)
+
 app.get('*', (req, res) => res.status(501).send(`Ouuuups, qu'est ce que t'as foutu!`))
+
+
+
+
 
 /** demarrer le server avec la bdd */
 
 DB.authenticate()
-    .then(() => console.log('la connexion à la base de donnée est ok'))
-    .then(() => {
+  .then(() => console.log('la connexion à la base de donnée est ok'))
+  .then(() => {
 
-      app.listen(process.env.SERVER_PORT, () => {
-          console.log(`le server ecoute sur le port ===> ${process.env.SERVER_PORT}, amuse toi! `)
-      })
-
+    app.listen(process.env.SERVER_PORT, () => {
+      console.log(`le server ecoute sur le port ===> ${process.env.SERVER_PORT}, amuse toi! `)
     })
-    .catch(err => console.log('erreur de la base de donnée ==>', err))
+
+  })
+  .catch(err => console.log('erreur de la base de donnée ==>', err))
 
 
 
