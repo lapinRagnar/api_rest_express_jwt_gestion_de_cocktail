@@ -1,3 +1,4 @@
+// les imports
 const express = require('express')
 
 const User = require('../models/user')
@@ -5,6 +6,8 @@ const User = require('../models/user')
 const bcrypt = require('bcrypt')
 
 let router = express.Router()
+
+const checkTokenMiddleware = require('../jsonwebtoken/check')
 
 
 /** middleware pour logger la date des requetes */
@@ -21,11 +24,13 @@ router.use((req, res, next) => {
 
 
 /** routages de la ressource User */
-router.get('', (req, res) => {
+router.get('', checkTokenMiddleware, (req, res) => {
   User.findAll()
     .then(users => res.json({data: users}))
     .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err})) 
 })
+
+
 
 router.get('/:id', (req, res) => {
 
