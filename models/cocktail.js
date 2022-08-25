@@ -29,4 +29,10 @@ const Cocktail = DB.define('Cocktail', {
 }, { paranoid: true })                // soft delete
 
 
+/** synchronisation du modele  */
+// Cocktail.sync()
+// Cocktail.sync({force: true})
+// Cocktail.sync({alter: true})
+
+
 module.exports = Cocktail

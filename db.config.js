@@ -9,6 +9,9 @@ let sequelize = new Sequelize(
   }
 )
 
-sequelize.sync()
+/** synchronisation des modeles  */
+// sequelize.sync((err) => {
+//   console.log('erreur de syncronisation de la base de donnée, ok!', err)
+// })
 
 module.exports = sequelize

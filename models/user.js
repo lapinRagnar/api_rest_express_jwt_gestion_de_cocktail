@@ -35,4 +35,10 @@ const User = DB.define('User', {
 }, { paranoid: true })                // soft delete
 
 
+/** synchronisation du modele  */
+// User.sync()
+// User.sync({force: true})
+// User.sync({alter: true})
+
+
 module.exports = User
