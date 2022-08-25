@@ -6,6 +6,20 @@ const bcrypt = require('bcrypt')
 
 let router = express.Router()
 
+
+/** middleware pour logger la date des requetes */
+
+router.use((req, res, next) => {
+
+  const event = new Date()
+  console.log('Users - date de connexion : ', event.toString())
+
+  next()
+
+})
+
+
+
 /** routages de la ressource User */
 router.get('', (req, res) => {
   User.findAll()
