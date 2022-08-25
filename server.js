@@ -24,7 +24,7 @@ app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
 
 app.use('/users', user_router)
 
-// app.use('/cocktails', cocktail_router)
+app.use('/cocktails', cocktail_router)
 
 app.use('/auth', auth_router)
 

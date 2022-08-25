@@ -9,7 +9,7 @@ const Cocktail = DB.define('Cocktail', {
   },
   user_id: {
     type: DataTypes.INTEGER(10),
-    allowNull: false
+    allowNull: true
   },
   nom: {
     type: DataTypes.STRING(100),
