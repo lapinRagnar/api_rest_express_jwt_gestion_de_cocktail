@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt')
 
 let router = express.Router()
 
-const checkTokenMiddleware = require('../jsonwebtoken/check')
 
 
 /** middleware pour logger la date des requetes */
@@ -24,7 +23,7 @@ router.use((req, res, next) => {
 
 
 /** routages de la ressource User */
-router.get('', checkTokenMiddleware, (req, res) => {
+router.get('', (req, res) => {
   User.findAll()
     .then(users => res.json({data: users}))
     .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err})) 

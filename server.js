@@ -1,7 +1,8 @@
+/** les imports */
 const express = require('express')
 const cors = require('cors')
-
 let DB = require('./db.config')
+const checkTokenMiddleware = require('./jsonwebtoken/check')
 
 /** initialisation de l'api */
 
@@ -22,7 +23,7 @@ const auth_router = require('./routes/auth')
 /** mise en place du routage */
 app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
 
-app.use('/users', user_router)
+app.use('/users', checkTokenMiddleware, user_router)
 
 app.use('/cocktails', cocktail_router)
 

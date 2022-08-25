@@ -1,3 +1,4 @@
+/** les imports */
 const express = require('express')
 
 const Cocktail = require('../models/cocktail')
@@ -5,6 +6,9 @@ const Cocktail = require('../models/cocktail')
 const bcrypt = require('bcrypt')
 
 let router = express.Router()
+
+const checkTokenMiddleware = require('../jsonwebtoken/check')
+
 
 
 /** middleware pour logger la date des requetes */
@@ -57,7 +61,7 @@ router.get('/:id', (req, res) => {
 
 
 // ajouter un cocktail
-router.put('', (req, res) => {
+router.put('', checkTokenMiddleware, (req, res) => {
 
   const { user_id, nom, description, recette } = req.body
 
@@ -85,7 +89,7 @@ router.put('', (req, res) => {
 
 
 // supprimer un cocktail
-router.delete('/:id', (req, res) => {
+router.delete('/:id', checkTokenMiddleware, (req, res) => {
 
   let cocktailId = parseInt(req.params.id)
   
