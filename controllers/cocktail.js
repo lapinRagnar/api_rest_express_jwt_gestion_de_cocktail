@@ -1,6 +1,6 @@
 /** les imports */
 const Cocktail = require('../models/cocktail')
-const bcrypt = require('bcrypt')
+const { RequestError, CocktailError } = require('../error')
 
 
 // afficher tous les cocktails
@@ -14,7 +14,7 @@ exports.getAllCocktails = (req, res) => {
 
 
 // afficher un cocktail
-exports.getCocktail = async (req, res) => {
+exports.getCocktail = async (req, res, next) => {
 
   let cocktailId = parseInt(req.params.id)
 
@@ -23,7 +23,8 @@ exports.getCocktail = async (req, res) => {
 
 
   if (!cocktailId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
+    // return res.status(400).json({ message: 'ID non trouvé' })
+    throw new RequestError('missing parameter!')
   }
 
 
@@ -34,7 +35,8 @@ exports.getCocktail = async (req, res) => {
 
     // teste si resultat
     if ((cocktail === null)) {
-      return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
+      // return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
+      throw new CocktailError('cocktail non trouvé, ouuups!')
     }
 
     // renvoie du cocktail trouvé
@@ -42,22 +44,16 @@ exports.getCocktail = async (req, res) => {
 
   } catch (err) {
 
-    return res.status(500).json({ message: 'erreur de la base de donnée', error: err})
+    // return res.status(500).json({ message: 'erreur de la base de donnée', error: err})
+    // return res.status(err.statusCode || 500).json({ message: err.message, error: err})
+
+    console.log('on est dans le catch')
+    console.log('message err', err.message)
+
+    next(err)
 
   }
 
-
-
-  // Cocktail.findOne({ where: {id: cocktailId}, raw: true })
-  //   .then(cocktail => {
-
-  //     if ((cocktail === null)) {
-  //       return res.status(404).json({ message: 'cocktail non trouvé, ouuups!' })
-  //     }
-
-  //     return res.json({data: cocktail})
-  //   })
-  //   .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 

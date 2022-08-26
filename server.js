@@ -32,7 +32,13 @@ app.use('/auth', auth_router)
 app.get('*', (req, res) => res.status(501).send(`Ouuuups, qu'est ce que t'as foutu!`))
 
 
-
+// middleware pour gerer les erreurs
+app.use( (error, req, res, next) => {
+  console.log('je suis dans le middleware')
+  console.log(error)
+  
+  return res.status(error.statusCode || 500).json({ message: error.message, error: error})
+})
 
 
 /** demarrer le server avec la bdd */
