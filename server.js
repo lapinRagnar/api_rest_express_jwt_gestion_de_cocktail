@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 let DB = require('./db.config')
 const checkTokenMiddleware = require('./jsonwebtoken/check')
+const errorHandler = require('./error/errorHandler')
 
 /** initialisation de l'api */
 
@@ -33,12 +34,7 @@ app.get('*', (req, res) => res.status(501).send(`Ouuuups, qu'est ce que t'as fou
 
 
 // middleware pour gerer les erreurs
-app.use( (error, req, res, next) => {
-  console.log('je suis dans le middleware')
-  console.log(error)
-  
-  return res.status(error.statusCode || 500).json({ message: error.message, error: error})
-})
+app.use(errorHandler)
 
 
 /** demarrer le server avec la bdd */

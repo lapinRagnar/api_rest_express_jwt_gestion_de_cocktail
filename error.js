@@ -14,8 +14,6 @@ class MainError extends Error {
       this.statusCode = 404
       this.type = 'cocktail'
     }
-
-
   }
 }
 
