@@ -1,7 +1,8 @@
 /** les imports */
+const DB = require('../db.config')
+const User = DB.User
+
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const User = require('../models/user')
 const { AuthenticationError } = require('../error/customError')
 
 /** routages de la ressource auths */

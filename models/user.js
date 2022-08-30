@@ -38,6 +38,7 @@ module.exports = (sequelize) => {
     }
   }, { paranoid: true })                // soft delete
 
+  // User.sync()
 
   // hook pour le hashage du password
   User.beforeCreate(async (user, options) => {

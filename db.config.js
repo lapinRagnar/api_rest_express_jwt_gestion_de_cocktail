@@ -7,17 +7,19 @@ let sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'mysql',
-    logging: false
+    logging: true
   }
 )
 
 /** mise en place des relations */
 const db = {}
+
 db.sequelize = sequelize
 db.User = require('./models/user')(sequelize)
 db.Cocktail = require('./models/cocktail')(sequelize)
 
-
+db.User.hasMany(db.Cocktail, {foreignKey: 'user_id'})
+db.Cocktail.belongsTo(db.User, {foreignKey: 'user_id'})
 
 
 /** synchronisation des modeles  */
@@ -25,4 +27,6 @@ db.Cocktail = require('./models/cocktail')(sequelize)
 //   console.log('erreur de syncronisation de la base de donnée, ok!', err)
 // })
 
-module.exports = sequelize
+db.sequelize.sync({alter: true})
+
+module.exports = db

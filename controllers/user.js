@@ -1,6 +1,8 @@
 // les imports
 
-const User = require('../models/user')
+const DB = require('../db.config')
+const User = DB.User
+
 const { RequestError, UserError } = require('../error/customError')
 
 
@@ -45,17 +47,6 @@ exports.getUser = async (req, res, next) => {
     next(err)
   }
 
-
-
-  User.findOne({ where: {id: userId}, raw: true })
-    .then(user => {
-      if ((user === null)) {
-        return res.status(404).json({ message: 'User not found' })
-      }
-
-      return res.json({data: user})
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 

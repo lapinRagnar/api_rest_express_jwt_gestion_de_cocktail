@@ -1,5 +1,8 @@
 /** les imports */
-const Cocktail = require('../models/cocktail')
+const DB = require('../db.config')
+const Cocktail = DB.Cocktail
+const User = DB.User
+
 const { RequestError, CocktailError } = require('../error/customError')
 
 
@@ -28,7 +31,7 @@ exports.getCocktail = async (req, res, next) => {
     }
 
     // recuperer le cocktail
-    let cocktail = await Cocktail.findOne({ where: {id: cocktailId}, raw: true })
+    let cocktail = await Cocktail.findOne({ where: {id: cocktailId}, raw: true, include: User })
 
     // teste si resultat
     if ((cocktail === null)) {
@@ -55,6 +58,8 @@ exports.addCocktail = async (req, res, next) => {
   try {
 
     const { user_id, nom, description, recette } = req.body
+
+    console.log('les champs', req.body)
     
     if ( !user_id || !nom || !description || !recette) {
       throw new RequestError('missing parameter!')  

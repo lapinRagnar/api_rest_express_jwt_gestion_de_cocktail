@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
 
-  return Cocktail = sequelize.define('Cocktail', {
+  const Cocktail = sequelize.define('Cocktail', {
     id: {
       type: DataTypes.INTEGER(10),
       primaryKey: true,
@@ -30,6 +30,9 @@ module.exports = (sequelize) => {
     }
   }, { paranoid: true })                // soft delete
 
+  // Cocktail.sync()
+
+  return Cocktail
 }
 
 

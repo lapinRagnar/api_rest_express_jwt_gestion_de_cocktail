@@ -24,7 +24,8 @@ const auth_router = require('./routes/auth')
 /** mise en place du routage */
 app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
 
-app.use('/users', checkTokenMiddleware, user_router)
+// app.use('/users', checkTokenMiddleware, user_router)
+app.use('/users', user_router)
 
 app.use('/cocktails', cocktail_router)
 
@@ -39,7 +40,7 @@ app.use(errorHandler)
 
 /** demarrer le server avec la bdd */
 
-DB.authenticate()
+DB.sequelize.authenticate()
   .then(() => console.log('la connexion à la base de donnée est ok'))
   .then(() => {
 
