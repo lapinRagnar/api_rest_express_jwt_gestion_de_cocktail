@@ -33,11 +33,13 @@ router.get('/:id', cocktailCtrl.getCocktail)
 
 
 // ajouter un cocktail
-router.put('', checkTokenMiddleware, cocktailCtrl.addCocktail)
+// router.put('', checkTokenMiddleware, cocktailCtrl.addCocktail)
+router.put('', cocktailCtrl.addCocktail)
 
 
 // modifier un cocktail
-router.patch('/:id', checkTokenMiddleware, cocktailCtrl.updateCocktail)
+// router.patch('/:id', checkTokenMiddleware, cocktailCtrl.updateCocktail)
+router.patch('/:id', cocktailCtrl.updateCocktail)
 
 
 // restaurer un cocktail
@@ -52,7 +54,8 @@ router.delete('/trash/:id', cocktailCtrl.trashCocktail)
 
 
 // supprimer un cocktail definitivement
-router.delete('/:id', checkTokenMiddleware, cocktailCtrl.deleteCocktail)
+// router.delete('/:id', checkTokenMiddleware, cocktailCtrl.deleteCocktail)
+router.delete('/:id', cocktailCtrl.deleteCocktail)
 
 
 

@@ -4,6 +4,7 @@ const cors = require('cors')
 let DB = require('./db.config')
 const checkTokenMiddleware = require('./jsonwebtoken/check')
 const errorHandler = require('./error/errorHandler')
+const path = require('path')
 
 /** initialisation de l'api */
 
@@ -22,7 +23,15 @@ const auth_router = require('./routes/auth')
 
 
 /** mise en place du routage */
-app.get('/', (req, res) => res.send(`Je suis en ligne! aie aie aieuuuuh`))
+// app.get('/', (req, res) => res.send(
+//   `
+//     <h1> Bienvenu sur mon api - gestion de cocktail</h1>  
+//     <h3> ressources : utilisateur </h3>
+
+  
+//   `
+// ))
+app.get('/', (req, res) => res.sendFile(path.join(__dirname+'/pages/home.html')))
 
 // app.use('/users', checkTokenMiddleware, user_router)
 app.use('/users', user_router)
