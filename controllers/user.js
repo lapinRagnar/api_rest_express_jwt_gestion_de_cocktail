@@ -78,17 +78,18 @@ exports.addUser = async (req, res, next) => {
       throw new CocktailError(` l'utilisateur ${nom} existe deja! `, 1)
     }
 
-    bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
-      .then(hash => {
+    // hashage du mot de passe
+    let hash = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
+    req.body.password = hash
 
-        req.body.password = hash
 
-        User.create(req.body)
-          .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
-          .catch(err => next())
+    // création de l'utilisateur
+    let userc = await User.create(req.body)
 
-      })
-      .catch(err => next())
+
+    // renvoie de l'utilisateur crée
+    return res.json({ message: "l'utilisateur a été bien crée!", data: userc})
+
 
   } catch (err) {
     next()
