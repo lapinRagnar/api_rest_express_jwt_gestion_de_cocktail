@@ -31,7 +31,7 @@ exports.getCocktail = async (req, res, next) => {
     }
 
     // recuperer le cocktail
-    let cocktail = await Cocktail.findOne({ where: {id: cocktailId}, raw: true, include: User })
+    let cocktail = await Cocktail.findOne({ where: {id: cocktailId}, raw: true, include: {model: User, attributes: ['id', 'pseudo', 'email']} })
 
     // teste si resultat
     if ((cocktail === null)) {

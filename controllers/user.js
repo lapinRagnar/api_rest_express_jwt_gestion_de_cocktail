@@ -33,13 +33,13 @@ exports.getUser = async (req, res, next) => {
     }
 
     // recuperer l'utilisateur
-    let user = await User.findOne({ where: {idd: userId}, raw: true})
+    let user = await User.findOne({ where: {id: userId}, attributes: ['id', 'pseudo', 'email']})
 
     // teste si resultat
     if ((user === null)) {
       throw new UserError('utilisateur non trouvé, ouuups!', 0)
     }
-
+ 
     // renvoyer l'user
     return res.json({data: user})
 
