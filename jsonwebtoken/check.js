@@ -23,7 +23,7 @@ const checkTokenMiddleware = (req, res, next) => {
   const token = req.headers.authorization && extractBearer(req.headers.authorization)
 
   if (!token) {
-    return res.status(401).json('oh la la, qu\'est ce que t\'as foutu mecs!')
+    return res.status(401).json("ouuuups, tu dois être connecté pour acceder à cette page!")
   }
 
   // verifier la validité du token

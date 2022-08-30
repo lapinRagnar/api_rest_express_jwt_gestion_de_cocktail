@@ -30,7 +30,7 @@ app.use('/cocktails', cocktail_router)
 
 app.use('/auth', auth_router)
 
-app.get('*', (req, res) => res.status(501).send(`Ouuuups, qu'est ce que t'as foutu!`))
+app.get('*', (req, res) => res.status(501).send(`Ouuuups, la route n'existe pas euuuuh!!`))
 
 
 // middleware pour gerer les erreurs

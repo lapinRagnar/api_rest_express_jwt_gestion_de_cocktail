@@ -52,9 +52,9 @@ exports.getCocktail = async (req, res, next) => {
 // ajouter un cocktail
 exports.addCocktail = async (req, res, next) => {
 
-  const { user_id, nom, description, recette } = req.body
-
   try {
+
+    const { user_id, nom, description, recette } = req.body
     
     if ( !user_id || !nom || !description || !recette) {
       throw new RequestError('missing parameter!')  
@@ -126,7 +126,7 @@ exports.untrashCocktail = async (req, res, next) => {
     }
     
     // restaurer le cocktail
-    await Cocktail.restore({ where: {id: cocktailId, raw: true}})
+    await Cocktail.restore({ where: {id: cocktailId}})
     
     // reponse de la restauration
     return res.status(204).json({})
@@ -142,6 +142,7 @@ exports.trashCocktail = async (req, res, next) => {
 
   try {
     let cocktailId = parseInt(req.params.id)
+    console.log('je passe la - l id est => ', cocktailId)
 
     // verification si cocktail exite et coherent
     if (!cocktailId) {
@@ -149,7 +150,7 @@ exports.trashCocktail = async (req, res, next) => {
     }
 
     // mettre le cocktail à la poubelle
-    await Cocktail.destroy({ where: {id: cocktailId, raw: true}})
+    await Cocktail.destroy({ where: {id: cocktailId}})
 
     // reponse de la suppression
     return res.status(204).json({})

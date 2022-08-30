@@ -2,28 +2,51 @@
 
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
+const { RequestError, UserError } = require('../error/customError')
+
 
 
 /** routages de la ressource User */
 
 // tous les utilisateur
-exports.getAllUsers = (req, res) => {
+exports.getAllUsers = (req, res, next) => {
 
   User.findAll()
     .then(users => res.json({data: users}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err})) 
+    .catch(err => next()) 
 
 }
 
 
 // utilisateur par id
-exports.getUser = (req, res) => {
+exports.getUser = async (req, res, next) => {
 
-  let userId = parseInt(req.params.id)
+  try {
 
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
+    // recuperer l'id
+    let userId = parseInt(req.params.id)
+
+    // test si l'id exite et coherent
+    if (!userId) {
+      throw new RequestError('missing parameter!')
+    }
+
+    // recuperer l'utilisateur
+    let user = await User.findOne({ where: {idd: userId}, raw: true})
+
+    // teste si resultat
+    if ((user === null)) {
+      throw new UserError('utilisateur non trouvé, ouuups!', 0)
+    }
+
+    // renvoyer l'user
+    return res.json({data: user})
+
+  } catch (err) {
+    next(err)
   }
+
+
 
   User.findOne({ where: {id: userId}, raw: true })
     .then(user => {
@@ -39,117 +62,133 @@ exports.getUser = (req, res) => {
 
 
 // ajouter un utilisateur
+exports.addUser = async (req, res, next) => {
 
-exports.addUser = (req, res) => {
+  try {
 
-  const { nom, prenom, pseudo, email, password } = req.body
+    const { nom, prenom, pseudo, email, password } = req.body
 
-  if ( !nom || !prenom || !pseudo || !email || !password) {
-    return res.status(400).json({ message: "donnée manquantes!, remplit bien tous les champs requis stp!" })
+    if ( !nom || !prenom || !pseudo || !email || !password) {
+      throw new RequestError('missing parameter!') 
+    }
+
+    let user = await User.findOne({ where: { email: email }, raw: true})
+
+    if (user !== null) {
+      throw new CocktailError(` l'utilisateur ${nom} existe deja! `, 1)
+    }
+
+    bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
+      .then(hash => {
+
+        req.body.password = hash
+
+        User.create(req.body)
+          .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
+          .catch(err => next())
+
+      })
+      .catch(err => next())
+
+  } catch (err) {
+    next()
   }
+}
 
-  User.findOne({ where: { email: email }, raw: true})
-    .then(user => {
-      if (user !== null) {
-        return res.status(409).json({ message: ` l'user ${nom} existe, choisit un autre... `})
-      }
 
-      bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
-        .then(hash => {
+// modifier un utilisateur - A refaire ne marche pas
+exports.updateUser = async (req, res, next) => {
 
-          req.body.password = hash
+  try {
 
-          User.create(req.body)
-            .then(user => res.json({ message: "l'utilisateur a été bien crée!", data: user}) )
-            .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+    let userId = parseInt(req.params.id)
 
-        })
-        .catch(err => res.status(500).json({ message: 'hash process error', error: err}))
+    if (!userId) {
+      throw new RequestError('missing parameter!')  
+    }
 
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
+    let user = await User.findOne({ where: {id: userId}, raw: true })
 
+    if (user === null) {
+      console.log('je suis la')
+      throw new UserError(`utilisateur non trouvé, désolé! `, 1)
+    }
+
+    user = await User.update(req.body, { where: { id: userId }})
+
+    return res.json({ message: "l'utilisateur a été bien modifié!", data: user})
+
+  } catch (err) {
+    next()
+  }
 
 }
 
 
-// modifier un utilisateur
+// restaurer un utilisateur supprimé
+exports.untrashUser = async (req, res, next) => {
 
-exports.updateUser = (req, res) => {
+  try {
 
-  let userId = parseInt(req.params.id)
+    let userId = parseInt(req.params.id)
 
-  if (!userId) {
-    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
+    if (!userId) {
+      throw new RequestError('missing parameter!')
+    }
+
+    await User.restore({ where: {id: userId}})
+
+    return res.status(204).json({})
+
+  } catch (err) {
+    next()
   }
-
-  User.findOne({ where: {id: userId}, raw: true })
-    .then(user => {
-
-      if (user === null) {
-        return res.status(400).json({ message: 'ouuups, cette utilisateur n\'existe pas...' })
-      }
-
-      User.update(req.body, { where: { id: userId }})
-        .then(user => res.json({ message: "l'utilisateur a été bien mises à jour!", data: user}))
-        .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-    })
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
-
-
-}
-
-
-// restaurer un utilisateur
-
-exports.untrashUser = (req, res) => {
-
-
-  let userId = parseInt(req.params.id)
-
-  if (!userId) {
-    return res.status(400).json({ message: 'ouuups, parametre manquantes...' })
-  }
-
-  User.restore({ where: {id: userId }})
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 
 
 // mettre à la corbeille utilisateur
+exports.trashUser = async (req, res, next) => {
 
-exports.trashUser = (req, res) => {
+  try {
+    
+    let userId = parseInt(req.params.id)
+    console.log(userId)
 
-  let userId = parseInt(req.params.id)
-  
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
+    if (!userId) {
+      throw new RequestError('missing parameter!')
+    }
+
+    await User.destroy({ where: {id: userId} })
+
+    return res.status(204).json({ message: `l'utilisateur a bien été supprimé, merci! `})
+
+  } catch (err) {
+    next()
   }
-
-  User.destroy({ where: {id: userId } })
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 
 
-
 // supprimer definitivement un utilisateur
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async (req, res, next) => {
 
-  let userId = parseInt(req.params.id)
-  
-  if (!userId) {
-    return res.status(400).json({ message: 'ID non trouvé' })
+  try {
+
+    let userId = parseInt(req.params.id)
+    
+    if (!userId) {
+      return res.status(400).json({ message: 'ID non trouvé' })
+    }
+
+    await User.destroy({ where: {id: userId }, force: true })
+
+    return res.status(204).json({})
+
+  } catch (err) {
+    next()
   }
-
-  User.destroy({ where: {id: userId }, force: true })
-    .then(() => res.status(204).json({}))
-    .catch(err => res.status(500).json({ message: 'erreur de la base de donnée', error: err}))
 
 }
 

@@ -39,7 +39,19 @@ router.put('', checkTokenMiddleware, cocktailCtrl.addCocktail)
 // modifier un cocktail
 router.patch('/:id', checkTokenMiddleware, cocktailCtrl.updateCocktail)
 
-// supprimer un cocktail
+
+// restaurer un cocktail
+
+router.post('/untrash/:id', cocktailCtrl.untrashCocktail)
+
+
+
+// mettre à la corbeille un cocktail provisoirement
+
+router.delete('/trash/:id', cocktailCtrl.trashCocktail)
+
+
+// supprimer un cocktail definitivement
 router.delete('/:id', checkTokenMiddleware, cocktailCtrl.deleteCocktail)
 
 

@@ -46,6 +46,7 @@ router.post('/untrash/:id', userCtrl.untrashUser)
 
 
 
+
 // mettre à la corbeille utilisateur
 
 router.delete('/trash/:id', userCtrl.trashUser)

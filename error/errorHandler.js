@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
   // 0 --> message simple
   // 1 --> message d'erreur sans detail 
   // 1 --> message avec toutes les erreurs 
-  debugLevel = 1
+  debugLevel = 2
   message = {}
 
   console.log('je suis dans errorHandler')
