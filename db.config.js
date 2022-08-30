@@ -18,7 +18,7 @@ db.sequelize = sequelize
 db.User = require('./models/user')(sequelize)
 db.Cocktail = require('./models/cocktail')(sequelize)
 
-db.User.hasMany(db.Cocktail, {foreignKey: 'user_id'})
+db.User.hasMany(db.Cocktail, {foreignKey: 'user_id', onDelete: 'cascade'})
 db.Cocktail.belongsTo(db.User, {foreignKey: 'user_id'})
 
 
