@@ -1,7 +1,6 @@
 // les imports
 
 const User = require('../models/user')
-const bcrypt = require('bcrypt')
 const { RequestError, UserError } = require('../error/customError')
 
 
@@ -66,21 +65,23 @@ exports.addUser = async (req, res, next) => {
 
   try {
 
+    // validation des données reçu
     const { nom, prenom, pseudo, email, password } = req.body
 
+    // verification si les champs sont bien rempli
     if ( !nom || !prenom || !pseudo || !email || !password) {
       throw new RequestError('missing parameter!') 
     }
 
+    // verification si l'utilisateur existe
     let user = await User.findOne({ where: { email: email }, raw: true})
-
     if (user !== null) {
       throw new CocktailError(` l'utilisateur ${nom} existe deja! `, 1)
     }
 
     // hashage du mot de passe
-    let hash = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
-    req.body.password = hash
+    // let hash = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND))
+    // req.body.password = hash
 
 
     // création de l'utilisateur

@@ -23,7 +23,10 @@ exports.login = async (req, res, next) => {
     }
     
     // verifier si c'est le bon mot de passe
-    let test = await bcrypt.compare(password, user.password)
+    // let test = await bcrypt.compare(password, user.password)
+    let test = await User.checkPassword(password, user.password)
+
+
     if (!test) {
       // return res.status(401).json({ message: "mauvais mot de passe!"})
       throw new AuthenticationError('wrong password', 2)

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const DB = require('../db.config')
+const bcrypt = require('bcrypt')
 
 const User = DB.define('User', {
   id: {
@@ -35,9 +36,16 @@ const User = DB.define('User', {
 }, { paranoid: true })                // soft delete
 
 
-User.beforeCreate((user, options) => {
-  
+// hook pour le hashage du password
+User.beforeCreate(async (user, options) => {
+  let hash = await bcrypt.hash(user.password, parseInt(process.env.BCRYPT_SALT_ROUND))
+  user.password = hash
 })
+
+// ma fonction pour verifier le mot de passe - pour l'authentification 
+User.checkPassword = async (password, originel) => {
+  return await bcrypt.compare(password, originel)
+}
 
 
 /** synchronisation du modele  */
